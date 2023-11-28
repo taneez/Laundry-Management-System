@@ -1,21 +1,23 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const LostAndFound = () => {
   const [lostItems, setLostItems] = useState([]);
   const [foundItems, setFoundItems] = useState([]);
   const [currentItem, setCurrentItem] = useState({
-    type: "lost",
+    type: "", // Changed from "lost" to ""
     description: "",
     image: "",
+    email: "",
   });
 
   const handleInputChange = (e) => {
     setCurrentItem({ ...currentItem, [e.target.name]: e.target.value });
+    console.log('Image URL:', currentItem.image);
   };
 
   const handlePost = () => {
-    if (!currentItem.description || !currentItem.image) {
-      alert("Please fill in both description and image URL.");
+    if (!currentItem.description || !currentItem.image || !currentItem.email) {
+      alert("Please fill in description, image URL, and email.");
       return;
     }
 
@@ -37,11 +39,6 @@ const LostAndFound = () => {
       .then((response) => {
         if (response.ok) {
           console.log("Item posted successfully");
-
-          // Refresh the list of items after posting
-          // fetchItems();
-
-          // Update the state based on the response
           return response.json();
         } else {
           console.error("Failed to post item");
@@ -49,7 +46,6 @@ const LostAndFound = () => {
         }
       })
       .then((data) => {
-        // Update state based on the response
         if (currentItem.type === "lost") {
           setLostItems([data, ...lostItems]);
         } else {
@@ -60,18 +56,27 @@ const LostAndFound = () => {
         console.error("Error during item posting:", error);
       });
 
-    if (currentItem.type === "lost") {
-      setLostItems([newItem, ...lostItems]);
-    } else {
-      setFoundItems([newItem, ...foundItems]);
-    }
-
     setCurrentItem({
-      type: "lost",
+      type: "",
       description: "",
       image: "",
+      email: "",
     });
   };
+
+  useEffect(() => {
+    // Fetch lost items
+    fetch("http://localhost:3001/getLostItems")
+      .then((response) => response.json())
+      .then((data) => setLostItems(data))
+      .catch((error) => console.error("Error fetching lost items:", error));
+
+    // Fetch found items
+    fetch("http://localhost:3001/getFoundItems")
+      .then((response) => response.json())
+      .then((data) => setFoundItems(data))
+      .catch((error) => console.error("Error fetching found items:", error));
+  }, []); // Run only once on component mount
 
   const renderPosts = (items) => {
     return (
@@ -79,14 +84,17 @@ const LostAndFound = () => {
         {items.map((item, index) => (
           <div key={index} className="card mb-3">
             <img
-              src={item.image}
+              src={item.Image}
               className="card-img-top"
               alt={`Item ${index}`}
             />
             <div className="card-body">
-              <p className="card-text">{item.description}</p>
+              <p className="card-text">{item.Description}</p>
               <p className="card-text">
-                <small className="text-muted">{item.date}</small>
+                <small className="text-muted">{item.Date}</small>
+              </p>
+              <p className="card-text">
+                <small className="text-muted">Posted by: {item.Email}</small>
               </p>
             </div>
           </div>
@@ -122,6 +130,7 @@ const LostAndFound = () => {
               value={currentItem.type}
               onChange={handleInputChange}
             >
+              <option value="">Select</option>
               <option value="lost">Lost</option>
               <option value="found">Found</option>
             </select>
@@ -144,6 +153,17 @@ const LostAndFound = () => {
               id="itemImage"
               name="image"
               value={currentItem.image}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="itemEmail">Email:</label>
+            <input
+              type="email"
+              className="form-control"
+              id="itemEmail"
+              name="email"
+              value={currentItem.email}
               onChange={handleInputChange}
             />
           </div>

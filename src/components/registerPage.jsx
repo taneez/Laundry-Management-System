@@ -2,11 +2,13 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 
 const Register = () => {
-  const [username, setUsername] = useState("");
+  const [collegeId, setCollegeId] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phoneNo, setphoneNo] = useState("");
 
   const handleRegister = () => {
-    const userData = { username, password };
+    const userData = { collegeId, email, password, phoneNo };
 
     fetch("http://localhost:3001/register", {
       method: "POST",
@@ -46,15 +48,28 @@ const Register = () => {
       <h2>Register</h2>
       <form>
         <div className="mb-3">
-          <label htmlFor="username" className="form-label">
-            Username
+          <label htmlFor="collegeId" className="form-label">
+            College ID
           </label>
           <input
             type="text"
             className="form-control"
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            id="collegeId"
+            value={collegeId}
+            onChange={(e) => setCollegeId(e.target.value)}
+            style={{ maxWidth: "200px" }}
+          />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="email" className="form-label">
+            Email
+          </label>
+          <input
+            type="email"
+            className="form-control"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             style={{ maxWidth: "200px" }}
           />
         </div>
@@ -68,6 +83,19 @@ const Register = () => {
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            style={{ maxWidth: "200px" }}
+          />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="phoneNo" className="form-label">
+            Phone Number
+          </label>
+          <input
+            type="text"
+            className="form-control"
+            id="phoneNo"
+            value={phoneNo}
+            onChange={(e) => setphoneNo(e.target.value)}
             style={{ maxWidth: "200px" }}
           />
         </div>

@@ -1,36 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, ListGroup, Dropdown } from 'react-bootstrap';
 
 const Complaints = () => {
-  const [messages, setMessages] = useState([
-    {
-      studentID: '123',
-      studentName: 'John Doe',
-      hostel: 'Hostel A',
-      roomNumber: '101',
-      content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-      date: '2023-11-10',
-      type: 'message', // 'message' or 'complaint'
-    },
-    // Add more messages as needed
-  ]);
-
-  const [complaints, setComplaints] = useState([
-    {
-      studentID: '456',
-      studentName: 'Jane Doe',
-      hostel: 'Hostel B',
-      roomNumber: '202',
-      content: 'Laundry machine not working properly.',
-      date: '2023-11-09',
-      type: 'complaint', // 'message' or 'complaint'
-    },
-    // Add more complaints as needed
-  ]);
-
+  const [complaints, setComplaints] = useState([]);
   const [selectedDate, setSelectedDate] = useState('');
 
-  const allItems = [...messages, ...complaints];
+  useEffect(() => {
+    // Fetch data from the server when the component mounts
+    fetchComplaints();
+  }, []);
+
+  const fetchComplaints = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/getComplaints');
+      if (response.ok) {
+        const data = await response.json();
+        setComplaints(data);
+      } else {
+        throw new Error('Failed to fetch complaints');
+      }
+    } catch (error) {
+      console.error('Error fetching complaints:', error.message);
+    }
+  };
+
+  const allItems = complaints;
   const sortedItems = allItems.sort((a, b) => new Date(b.date) - new Date(a.date));
 
   const renderItems = () => {
@@ -40,16 +34,16 @@ const Complaints = () => {
         : sortedItems.filter((item) => item.date === selectedDate);
 
     return filteredItems.map((item, index) => (
-      <ListGroup.Item key={index} className={item.type === 'message' ? 'message-item' : 'complaint-item'}>
+      <ListGroup.Item key={index} className="complaint-item">
         <Card>
           <Card.Body>
             <Card.Title>
-              {item.studentName} (ID: {item.studentID})
+              {item.email} (ID: {item.complaint_id})
             </Card.Title>
-            <Card.Text>{item.content}</Card.Text>
+            <Card.Text>{item.description}</Card.Text>
           </Card.Body>
           <Card.Footer className="text-muted">
-            Posted on {item.date} at {item.hostel}, Room {item.roomNumber}
+            Posted on {item.date}
           </Card.Footer>
         </Card>
       </ListGroup.Item>
@@ -86,9 +80,9 @@ const Complaints = () => {
         <div style={{ height: '50px' }}></div>
       </header>
 
-      {/* Display messages and complaints sorted by most recent with date filtering */}
+      {/* Display complaints sorted by most recent with date filtering */}
       <div className="container mt-5">
-        <h2>Student Messages and Complaints</h2>
+        <h2>Student Complaints</h2>
         {renderDateFilterDropdown()}
         <ListGroup>{renderItems()}</ListGroup>
       </div>

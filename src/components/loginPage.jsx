@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async () => {
@@ -13,7 +13,7 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (response.ok) {
@@ -50,15 +50,15 @@ const Login = () => {
       <h2>Login</h2>
       <form>
         <div className="mb-3">
-          <label htmlFor="username" className="form-label">
-            Username
+          <label htmlFor="email" className="form-label">
+            Email
           </label>
           <input
             type="text"
             className="form-control"
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             style={{ maxWidth: "200px" }}
           />
         </div>
